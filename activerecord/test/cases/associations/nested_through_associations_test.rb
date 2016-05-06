@@ -567,6 +567,27 @@ class NestedThroughAssociationsTest < ActiveRecord::TestCase
     assert !c.post_taggings.empty?
   end
 
+  def test_nested_has_many_through_assoc_orderings
+    david = authors(:david)
+    expected_comments = david.comments.map(&:post_title_and_body).sort()
+
+    assert_equal expected_comments,
+      david.posts_assoc_ordered_comments_assoc_ordered.map(&:post_title_and_body),
+      "Should be ordered first by posts_ordered's lambda, then by comments_ordered's lambda"
+
+    assert_equal expected_comments,
+      david.posts_with_default_scope_order_comments_with_default_scope_order.map(&:post_title_and_body),
+      "Should be ordered first by PostWithDefaultScope's default scope, then by CommentWithDefaultScopeOrder's default scope"
+
+    assert_equal expected_comments,
+      david.posts_with_default_scope_order_comments_assoc_ordered.map(&:post_title_and_body),
+      "Should be ordered first by PostWithDefaultScope's default scope, then by comments_ordered's lambda"
+
+    assert_equal expected_comments,
+      david.posts_assoc_ordered_comments_ordered_by_default_scope.map(&:post_title_and_body),
+      "Should be ordered first by posts_ordered's lambda, then by CommentWithDefaultScopeOrder's default scope"
+  end
+
   private
 
     def assert_includes_and_joins_equal(query, expected, association)

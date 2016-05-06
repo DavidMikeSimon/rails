@@ -68,6 +68,9 @@ class Post < ActiveRecord::Base
 
   has_many :comments_with_extend_2, extend: [NamedExtension, NamedExtension2], class_name: "Comment", foreign_key: "post_id"
 
+  has_many :comments_ordered_by_assoc, -> { order(:body) }, :foreign_key => :post_id, :class_name => "Comment"
+  has_many :comments_ordered_by_default_scope, :foreign_key => :post_id, :class_name => "CommentWithDefaultScopeOrder"
+
   has_many :author_favorites, :through => :author
   has_many :author_categorizations, :through => :author, :source => :categorizations
   has_many :author_addresses, :through => :author
@@ -209,6 +212,8 @@ class PostWithDefaultScope < ActiveRecord::Base
   self.inheritance_column = :disabled
   self.table_name = 'posts'
   default_scope { order(:title) }
+  has_many :comments_ordered_by_default_scope, :foreign_key => :post_id, :class_name => "CommentWithDefaultScopeOrder"
+  has_many :comments_ordered_by_assoc, -> { order(:body) }, :foreign_key => :post_id, :class_name => "Comment"
 end
 
 class PostWithPreloadDefaultScope < ActiveRecord::Base

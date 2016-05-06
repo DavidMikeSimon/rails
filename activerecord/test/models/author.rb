@@ -43,6 +43,14 @@ class Author < ActiveRecord::Base
   has_many :ordered_uniq_comments_desc, -> { distinct.order('comments.id DESC') }, :through => :posts, :source => :comments
   has_many :readonly_comments, -> { readonly }, :through => :posts, :source => :comments
 
+  has_many :posts_with_default_scope_order, :class_name => 'PostWithDefaultScope'
+  has_many :posts_with_default_scope_order_comments_with_default_scope_order, :through => :posts_with_default_scope_order, :source => :comments_ordered_by_default_scope
+  has_many :posts_with_default_scope_order_comments_assoc_ordered, :through => :posts_with_default_scope_order, :source => :comments_ordered_by_assoc
+
+  has_many :posts_assoc_ordered, -> { order(:title) }, :class_name => 'Post'
+  has_many :posts_assoc_ordered_comments_ordered_by_default_scope, :through => :posts_assoc_ordered, :source => :comments_ordered_by_default_scope
+  has_many :posts_assoc_ordered_comments_assoc_ordered, :through => :posts_assoc_ordered, :source => :comments_ordered_by_assoc
+
   has_many :special_posts
   has_many :special_post_comments, :through => :special_posts, :source => :comments
   has_many :special_posts_with_default_scope, :class_name => 'SpecialPostWithDefaultScope'

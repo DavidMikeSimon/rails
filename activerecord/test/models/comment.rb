@@ -35,6 +35,10 @@ class Comment < ActiveRecord::Base
   def to_s
     body
   end
+
+  def post_title_and_body
+    "#{post.title} ::: #{body}"
+  end
 end
 
 class SpecialComment < Comment
@@ -57,4 +61,9 @@ end
 class CommentWithDefaultScopeReferencesAssociation < Comment
   default_scope ->{ includes(:developer).order('developers.name').references(:developer) }
   belongs_to :developer
+end
+
+class CommentWithDefaultScopeOrder < Comment
+  self.inheritance_column = :disabled
+  default_scope ->{ order(:body) }
 end
