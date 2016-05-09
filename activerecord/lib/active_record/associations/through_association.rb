@@ -12,12 +12,12 @@ module ActiveRecord
         #   1. To get the default_scope conditions for any of the other reflections in the chain
         #   2. To get the type conditions for any STI models in the chain
         def target_scope
-          scope = super
+          scope = super.except(:order)
           reflection.chain.drop(1).each do |reflection|
             relation = reflection.klass.all
-            scope.merge!(
-              relation.except(:select, :create_with, :includes, :preload, :joins, :eager_load)
-            )
+            scope.merge!(relation.except(
+              :select, :create_with, :includes, :preload, :joins, :eager_load, :order
+            ))
           end
           scope
         end

@@ -134,6 +134,9 @@ module ActiveRecord
             scope = next_chain_scope(scope, table, reflection, association_klass, foreign_table, next_reflection)
           end
 
+          # Apply order in default_scope at lower precedence than order in association lambdas.
+          scope.order_values = reflection.klass.all.order_values | scope.order_values
+
           # Exclude the scope of the association itself, because that
           # was already merged in the #scope method.
           reflection.constraints.each do |scope_chain_item|
@@ -149,7 +152,7 @@ module ActiveRecord
 
             scope.unscope!(*item.unscope_values)
             scope.where_clause += item.where_clause
-            scope.order_values |= item.order_values
+            scope.order_values = item.order_values | scope.order_values
           end
 
           reflection = reflection.next
